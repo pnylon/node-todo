@@ -26,7 +26,7 @@ app.listen(3000, () => {
     console.log('Port 3000 is online');
 });
 
-
+module.exports = {app};
 
 // let newTodo = new Todo({
 //     text: '  Blow this joint   '
