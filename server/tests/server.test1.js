@@ -12,10 +12,15 @@ const todos = [{
     text: "second todo"
 }];
 // Add testing todos to DB.
+// beforeEach((done) => {
+//     Todo.remove({}).then(() => {
+//         return todo.insertMany(todos);
+//     }).then(() => done());
+// });
+
+// Remove everything from the database before test.
 beforeEach((done) => {
-    Todo.remove({}).then(() => {
-        return Todo.insertMany(todos);
-    }).then(() => done());
+    Todo.remove({}).then(() => done());
 });
 
 describe('POST /todos', () => {
@@ -35,7 +40,7 @@ describe('POST /todos', () => {
                     return done(error);
                 }
 
-                Todo.find({text}).then((todos) => {
+                Todo.find().then((todos) => {
                     expect(todos.length).toBe(1);
                     expect(todos[0].text).toBe(text);
                     done();
@@ -54,21 +59,9 @@ describe('POST /todos', () => {
                 }
 
                 Todo.find().then((todos) => {
-                    expect(todos.length).toBe(2);
+                    expect(todos.length).toBe(0);
                     done();
                 }).catch((error) => done(error));
             });
     });
-});
-
-describe('GET /todos', () => {
-    it('should get all todos', (done) => {
-        request(app)
-            .get('/todos')
-            .expect(200)
-            .expect((res) => {
-                expect(res.body.todos.length).toBe(2);
-            })
-            .end(done);
-    })
 });
