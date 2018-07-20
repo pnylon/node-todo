@@ -94,6 +94,24 @@ app.patch('/todos/:id', (req, res) => {
     });
 });
 
+app.post('/users', (req, res) => {
+    let body = _.pick(req.body, ['email', 'password']);
+    let user = new User(body);
+
+    //user.save().then((user) => {
+    user.save().then(() => {
+        // Return user.generagetAuthToken since we know we're expecting a chaining promise, 
+        // and move commented line down to a new then() call.
+        return user.generateAuthToken();
+        //res.send(user);
+    }).then((token) => {
+        // Add custom header with x-auth for our purpose.
+        res.header('x-auth', token).send(user);
+    }).catch((error) => {
+        res.status(400).send(error);
+    });
+});
+
 app.listen(port, () => {
     console.log(`Started on port ${port}`);
 });
