@@ -40,6 +40,7 @@ UserSchema.methods.toJSON = function () {
     return _.pick(userObject, ['_id', 'email']);
 };
 
+// Instance methods get called with the individual document (user = this).
 UserSchema.methods.generateAuthToken = function () {
     let user = this;
     let access = 'auth';
@@ -54,6 +55,31 @@ UserSchema.methods.generateAuthToken = function () {
     // From 90.Generating Auth Tokens and Setting Headers - 17:25
     return user.save().then(() => {
         return token;
+    });
+};
+
+//  Using "statics" - everything you add onto it turns into a model method as opposed to an instance method.
+// Capital U - Model methods get called with the model as the this binding (User = this).
+UserSchema.statics.findByToken = function (token) {
+    let User = this;
+    // Set decoded as undefined.
+    let decoded;
+
+    // The jwt.verify is going to throw an error if anything goes wrong, if the secret doesn't match, or if the token value was manipulated.
+    try {
+        decoded = jwt.verify(token, 'abc123');
+    } catch (error) {
+        // return new Promise((resolve, reject) => {
+        //     reject();
+        // });
+        return Promise.reject();
+    }
+
+    // Quotes are required when you have a dot in the value (tokens.token), might want tokeep them consistant.
+    return User.findOne({
+        '_id':  decoded._id,
+        'tokens.token': token,
+        'tokens.access': 'auth'
     });
 };
 
