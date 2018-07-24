@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 
+//mongoose.plugin(schema => { schema.options.usePushEach = true });
+
 let UserSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -32,6 +34,8 @@ let UserSchema = new mongoose.Schema({
         }
     }]
 });
+
+//UserSchema.options.usePushEach = true;
 
 // Use a regular function here to get access to the this
 UserSchema.methods.toJSON = function () {
