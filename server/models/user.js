@@ -88,6 +88,27 @@ UserSchema.statics.findByToken = function (token) {
     });
 };
 
+UserSchema.statics.findByCredentials = function(email, password) {
+    let User = this;
+
+    return User.findOne({email}).then((user) => {
+        if (!user) {
+            return Promise.reject();
+        }
+
+        // All of bcrypt methods only support callbacks.
+        return new Promise((resolve, reject) => {
+            bcrypt.compare(password, user.password, (error, result) => {
+                if (result) {
+                   resolve(user);
+                } else {
+                    reject();
+                }
+            });
+        });
+    });
+};
+
 // You have to provide the"next" argument and you have to call it in the function, otherwise the middleware 
 // is never going to complete.
 UserSchema.pre('save', function(next) {
