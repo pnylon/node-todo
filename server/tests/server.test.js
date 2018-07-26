@@ -223,7 +223,7 @@ describe('POST /users', () => {
                     expect(user).toExist();
                     expect(user.password).toNotBe(password);
                     done();
-                });
+                }).catch((error) => done(error));
             });
     });
 
@@ -247,5 +247,57 @@ describe('POST /users', () => {
             .send({email, password})
             .expect(400)
             .end(done);
+    });
+});
+
+describe('POST /users/login', () => {
+    it('should log in user and return auth token', (done) => {
+        let email = users[1].email;
+        let password = users[1].password;
+
+        request(app)
+            .post('/users/login')
+            .send({email, password})
+            .expect(200)
+            .expect((res) => {
+                expect(res.headers['x-auth']).toExist();
+            })
+            .end((error, res) => {
+                if (error) {
+                    return done(error);
+                }
+
+                User.findById(users[1]._id).then((user) => {
+                    expect(user.tokens[0]).toInclude({
+                        access: 'auth',
+                        token: res.headers['x-auth']
+                    });
+                    done();
+                }).catch((error) => done(error));
+            });
+    });
+
+    it('should reject invalid log in', (done) => {
+        let email = users[1].email;
+        let password = 'us9rj3irjrjw8rjw3';
+
+        request(app)
+            .post('/users/login')
+            .send({ email, password })
+            .expect(400)
+            .expect((res) => {
+                expect(res.headers['x-auth']).toNotExist();
+            })
+            .end((error, res) => {
+                if (error) {
+                    return done(error);
+                }
+
+                User.findById(users[1]._id).then((user) => {
+                    //expect(user.tokens[0]).length == 0;
+                    expect(user.tokens.length).toBe(0);
+                    done();
+                }).catch((error) => done(error));
+            });
     });
 });

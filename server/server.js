@@ -121,7 +121,7 @@ app.post('/users/login', (req, res) => {
     let body = _.pick(req.body, ['email', 'password']);
 
     User.findByCredentials(body.email, body.password).then((user) => {
-        // For testing in postman
+        // For early testing in postman
         //res.send(user);
         return user.generateAuthToken().then((token) => {
             res.header('x-auth', token).send(user);
@@ -148,8 +148,8 @@ module.exports = {app};
 // })
 
 // let newUser = new User({
-//     name: 'Adrian Goo',
-//     email: 'adrian@goo.com'
+//     name: 'Moby Goo',
+//     email: 'moby@goo.com'
 // });
 
 // newUser.save().then((doc) => {
