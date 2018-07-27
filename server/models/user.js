@@ -63,6 +63,18 @@ UserSchema.methods.generateAuthToken = function () {
     });
 };
 
+UserSchema.methods.removeToken = function(token) {
+    let user = this;
+
+    // return to chain together the call made in server.js. 
+    return user.update({
+        // $pull - mongo db operator
+        $pull: {
+            tokens: {token}
+        }
+    });
+};
+
 //  Using "statics" - everything you add onto it turns into a model method as opposed to an instance method.
 // Capital U - Model methods get called with the model as the this binding (User = this).
 UserSchema.statics.findByToken = function (token) {
