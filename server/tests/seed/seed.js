@@ -19,18 +19,24 @@ const users = [{
 }, {
     _id: userTwoID,
     email: 'beefoop@calaca.org',
-    password: 'userTwoPass'
+    password: 'userTwoPass',
+        tokens: [{
+            access: 'auth',
+            token: jwt.sign({ _id: userTwoID, access: 'auth' }, 'abc123').toString()
+        }]    
 }]
 
 // Dummie data for testing todos
 const todos = [{
     _id: new ObjectID(),
-    text: "first todo"
+    text: "first todo",
+    _creator: userOneID
 }, {
     _id: new ObjectID(),
     text: "second todo",
     completed: true,
-    completedAt: 333
+    completedAt: 333,
+    _creator: userTwoID
 }];
 
 const populateUsers = (done) => {
