@@ -49,7 +49,7 @@ UserSchema.methods.toJSON = function () {
 UserSchema.methods.generateAuthToken = function () {
     let user = this;
     let access = 'auth';
-    let token = jwt.sign({_id: user._id.toHexString(), access}, 'abc123').toString();
+    let token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
 
     // push() may cause issues.
     // user.tokens.push({access, token});
@@ -84,7 +84,7 @@ UserSchema.statics.findByToken = function (token) {
 
     // The jwt.verify is going to throw an error if anything goes wrong, if the secret doesn't match, or if the token value was manipulated.
     try {
-        decoded = jwt.verify(token, 'abc123');
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (error) {
         // return new Promise((resolve, reject) => {
         //     reject();
